@@ -4,6 +4,8 @@ An OpenCode TUI plugin that shows ChatGPT Codex usage limits in the right sideba
 
 The panel displays the current ChatGPT plan, whether Codex requests are allowed, used and remaining percentages, the duration of each usage window, and local reset times. By default, it refreshes every 30 seconds.
 
+<img src="screenshot_01.png" alt="The Codex usage in the side panel in OpenCode" width="80%" />
+
 ## Requirements
 
 - OpenCode 1.18.18 or newer
