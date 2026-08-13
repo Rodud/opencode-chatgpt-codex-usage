@@ -1,6 +1,7 @@
 /** @jsxImportSource @opentui/solid */
 import type { TuiPlugin, TuiPluginModule, TuiSlotPlugin } from "@opencode-ai/plugin/tui"
 import { RGBA } from "@opentui/core"
+import type { JSX } from "@opentui/solid"
 import { createSignal } from "solid-js"
 import { getUsage, type Usage, type WindowUsage } from "./usage.js"
 
@@ -96,38 +97,44 @@ const Panel = (props: {
       flexDirection="column"
       gap={1}
     >
-      <box flexDirection="row" justifyContent="space-between">
-        <text fg={colors.accent}>
-          <b>Codex usage</b>
-        </text>
-        <text fg={colors.muted}>{props.loading() ? "refreshing" : "30s refresh"}</text>
-      </box>
+      {(() => {
+        const value = props.usage()
 
-      {props.usage()?.error ? <text fg={colors.error}>{props.usage()?.error}</text> : null}
-      {!props.usage() && props.loading() ? <text fg={colors.muted}>Loading usage...</text> : null}
-      {!props.usage() && !props.loading() ? <text fg={colors.muted}>Usage unavailable</text> : null}
+        return (
+          <>
+            <box flexDirection="row" justifyContent="space-between">
+              <text fg={colors.accent}>
+                <b>Codex usage</b>
+              </text>
+              <text fg={colors.muted}>{props.loading() ? "refreshing" : "30s refresh"}</text>
+            </box>
 
-      {props.usage() && !props.usage()?.error ? (
-        <>
-          <text fg={colors.muted}>
-            Plan: <span style={{ fg: colors.text }}>{props.usage()?.plan ?? "unknown"}</span>
-          </text>
-          <text fg={statusColor()}>
-            {props.usage()?.allowed === true
-              ? "Allowed"
-              : props.usage()?.allowed === false
-                ? "Not allowed"
-                : "Allowed unknown"}
-            {props.usage()?.limitReached === true ? " | limit reached" : ""}
-          </text>
-          {props.usage()?.primary ? (
-            <Window label="Primary" value={props.usage()!.primary!} skin={colors} />
-          ) : null}
-          {props.usage()?.secondary ? (
-            <Window label="Secondary" value={props.usage()!.secondary!} skin={colors} />
-          ) : null}
-        </>
-      ) : null}
+            {value?.error ? <text fg={colors.error}>{value.error}</text> : null}
+            {!value && props.loading() ? <text fg={colors.muted}>Loading usage...</text> : null}
+            {!value && !props.loading() ? <text fg={colors.muted}>Usage unavailable</text> : null}
+
+            {value && !value.error ? (
+              <>
+                <text fg={colors.muted}>
+                  Plan: <span style={{ fg: colors.text }}>{value.plan ?? "unknown"}</span>
+                </text>
+                <text fg={statusColor()}>
+                  {value.allowed === true
+                    ? "Allowed"
+                    : value.allowed === false
+                      ? "Not allowed"
+                      : "Allowed unknown"}
+                  {value.limitReached === true ? " | limit reached" : ""}
+                </text>
+                {value.primary ? <Window label="Primary" value={value.primary} skin={colors} /> : null}
+                {value.secondary ? (
+                  <Window label="Secondary" value={value.secondary} skin={colors} />
+                ) : null}
+              </>
+            ) : null}
+          </>
+        )
+      }) as unknown as JSX.Element}
     </box>
   )
 }
