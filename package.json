@@ -3,6 +3,14 @@
   "name": "opencode-chatgpt-codex-usage",
   "version": "0.3.0",
   "description": "OpenCode TUI sidebar plugin for ChatGPT Codex usage limits",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Rodud/opencode-chatgpt-codex-usage.git"
+  },
+  "homepage": "https://github.com/Rodud/opencode-chatgpt-codex-usage#readme",
+  "bugs": {
+    "url": "https://github.com/Rodud/opencode-chatgpt-codex-usage/issues"
+  },
   "type": "module",
   "license": "MIT",
   "keywords": [
