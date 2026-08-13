@@ -3,9 +3,8 @@ import type { TuiPlugin, TuiPluginModule, TuiSlotPlugin } from "@opencode-ai/plu
 import { RGBA } from "@opentui/core"
 import type { JSX } from "@opentui/solid"
 import { createSignal } from "solid-js"
+import { parseRefreshInterval } from "./refresh.js"
 import { getUsage, type Usage, type WindowUsage } from "./usage.js"
-
-const REFRESH_INTERVAL_MS = 30 * 1000
 
 type Skin = {
   panel: RGBA
@@ -77,6 +76,7 @@ const Window = (props: { label: string; value: WindowUsage; skin: Skin }) => (
 const Panel = (props: {
   usage: () => Usage | null
   loading: () => boolean
+  refreshLabel: string
   theme: Record<string, unknown>
 }) => {
   const colors = skin(props.theme)
@@ -106,7 +106,9 @@ const Panel = (props: {
               <text fg={colors.accent}>
                 <b>Codex usage</b>
               </text>
-              <text fg={colors.muted}>{props.loading() ? "refreshing" : "30s refresh"}</text>
+              <text fg={colors.muted}>
+                {props.loading() ? "refreshing" : `${props.refreshLabel} refresh`}
+              </text>
             </box>
 
             {value?.error ? <text fg={colors.error}>{value.error}</text> : null}
@@ -139,9 +141,10 @@ const Panel = (props: {
   )
 }
 
-const tui: TuiPlugin = async (api) => {
+const tui: TuiPlugin = async (api, options) => {
   let timer: ReturnType<typeof setInterval> | undefined
   let refreshing: Promise<void> | undefined
+  const refreshInterval = parseRefreshInterval(options?.refreshInterval)
   const [usage, setUsage] = createSignal<Usage | null>(null)
   const [loading, setLoading] = createSignal(true)
 
@@ -172,7 +175,7 @@ const tui: TuiPlugin = async (api) => {
   }
 
   await refresh()
-  timer = setInterval(() => void refresh(), REFRESH_INTERVAL_MS)
+  timer = setInterval(() => void refresh(), refreshInterval.milliseconds)
   api.lifecycle.onDispose(() => {
     if (timer) clearInterval(timer)
   })
@@ -181,7 +184,14 @@ const tui: TuiPlugin = async (api) => {
     order: 150,
     slots: {
       sidebar_content(ctx) {
-        return <Panel usage={usage} loading={loading} theme={ctx.theme.current} />
+        return (
+          <Panel
+            usage={usage}
+            loading={loading}
+            refreshLabel={refreshInterval.label}
+            theme={ctx.theme.current}
+          />
+        )
       },
     },
   }

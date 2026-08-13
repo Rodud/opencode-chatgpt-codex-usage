@@ -2,7 +2,7 @@
 
 An OpenCode TUI plugin that shows ChatGPT Codex usage limits in the right sidebar.
 
-The panel displays the current ChatGPT plan, whether Codex requests are allowed, used and remaining percentages, the duration of each usage window, and local reset times. It refreshes every 30 seconds.
+The panel displays the current ChatGPT plan, whether Codex requests are allowed, used and remaining percentages, the duration of each usage window, and local reset times. By default, it refreshes every 30 seconds.
 
 ## Requirements
 
@@ -24,6 +24,21 @@ Add the package to the TUI plugin list in `~/.config/opencode/tui.jsonc`:
 Preserve any existing entries in the `plugin` array. Quit and restart OpenCode after changing the configuration; config-time plugins are not hot-reloaded.
 
 If ChatGPT is not connected yet, run `/connect` in OpenCode and select OpenAI/ChatGPT.
+
+## Refresh Interval
+
+Set `refreshInterval` with a duration ending in `s` (seconds), `m` (minutes), `h` (hours), or `d` (days):
+
+```jsonc
+{
+  "$schema": "https://opencode.ai/tui.json",
+  "plugin": [
+    ["opencode-chatgpt-codex-usage", { "refreshInterval": "5m" }]
+  ]
+}
+```
+
+The default is `"30s"`. Valid durations shorter than 10 seconds are clamped to `"10s"`; invalid values fall back to the default. Quit and restart OpenCode after changing the interval.
 
 ## Authentication
 
